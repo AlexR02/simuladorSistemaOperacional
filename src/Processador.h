@@ -9,7 +9,7 @@ typedef struct TipoBlocoLista BlocoLista;
 typedef struct TipoLista Processador;
 
 struct TipoBlocoLista{
-    Processo processo;
+    Processo *processo;
     BlocoLista *proximo;
 };
 
@@ -20,8 +20,8 @@ struct TipoLista{
 };
 
 void iniciaProcessador(Processador *lista);
-void insereNoProcessador(Processador *lista, Processo item);
-void removeDoProcessador(Processador *lista, BlocoLista *b, Processo *item);
-//void imprimeProcessador(Processador *lista);
+void insereNoProcessador(Processador *lista, Processo *processo);
+void removeDoProcessador(Processador *lista, BlocoLista *b, Processo *processo);
+void cpuInfo(Processador *lista);
 
 #endif

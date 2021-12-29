@@ -46,3 +46,26 @@ void insereNaMemoria(Memoria *h, int key, Processo *processo){
 	h->table[idx].processo = processo;
 	h->table[idx].count = 1;
 }
+
+void imprimeHash(Memoria *h){
+	for(int i=0; i<h->M; i++){
+		printf("KEY:%d\t- Value:", h->table[i].key);
+		printf("\n\n");
+		printf("\nO valor do IDX: %d\n",hash(h->table[i].key,h->M));
+		printf("\nO valor do cont: %d\n\n", h->table[i].count);
+	}
+}
+
+void memInfo(Memoria *h){
+	printf ("Memoria Total:%d/\n", h->M);
+	int aux = 0;
+	if(h->table != NULL){
+		if(h->table[0].processo != NULL){
+			for(int i=0; i<h->M; i++){
+				aux++;
+			}
+			printf("Memoria Alocada: %d", aux);
+		}
+	}
+	printf("Memoria Livre:%d\n",h->M - aux);
+}

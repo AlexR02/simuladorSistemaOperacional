@@ -6,7 +6,7 @@ void iniciaDisco(Disco *disco){
     disco->tam = 0;
 }
 
-void empilhar(Disco *disco, Processo processo){
+void empilharNoDisco(Disco *disco, Processo *processo){
     Bloco_pilha *aux;
     aux = (Bloco_pilha*)malloc(sizeof(Bloco_pilha));
     disco->top->processo = processo;
@@ -15,7 +15,7 @@ void empilhar(Disco *disco, Processo processo){
     disco->tam++;
 }
 
-void desempilhar(Disco *disco, Processo *processo){
+/* void desempilhar(Disco *disco, Processo *processo){
     Bloco_pilha *q;
     if(!disco->top->proximo){
         printf("O disco está vazio!!\n");
@@ -23,10 +23,10 @@ void desempilhar(Disco *disco, Processo *processo){
     }
     q = disco->top;
     disco->top = q->proximo;
-    *processo = q->proximo->processo;
+    processo = q->proximo->processo;
     free(q);
     disco->tam--;
-}
+} */
 
 void desempilharTodos(Disco *disco){
     Bloco_pilha *q;
@@ -55,7 +55,7 @@ int buscarProcesso(Disco *disco, int id){
     cont++;
     while(q->proximo){
         q = q->proximo;
-        if(id == q->processo.id){
+        if(id == q->processo->id){
             cont++;
             return cont;
         }

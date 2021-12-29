@@ -6,7 +6,7 @@ void iniciaProcessador(Processador *lista){
     lista->primeiro->proximo = NULL;
     lista->cont = 0;
 }
-void insereNoProcessador(Processador *lista, Processo processo){
+void insereNoProcessador(Processador *lista, Processo *processo){
     lista->ultimo->proximo = (BlocoLista*)malloc(sizeof(BlocoLista));
     lista->ultimo = lista->ultimo->proximo;
     lista->ultimo->processo = processo;
@@ -14,7 +14,7 @@ void insereNoProcessador(Processador *lista, Processo processo){
     lista->cont++;
 }
 
-void removeDoProcessador(Processador *lista, BlocoLista *b, Processo *processo){
+/* void removeDoProcessador(Processador *lista, BlocoLista *b, Processo *processo){
     BlocoLista *aux;
 
     if(lista->primeiro == lista->ultimo || b >= lista->ultimo){
@@ -23,7 +23,7 @@ void removeDoProcessador(Processador *lista, BlocoLista *b, Processo *processo){
     }
     
     aux = b->proximo;
-    *processo = aux->processo;
+    processo = aux->processo;
     b->proximo = aux->proximo;
 
     if(b->proximo == NULL){
@@ -31,17 +31,23 @@ void removeDoProcessador(Processador *lista, BlocoLista *b, Processo *processo){
         lista->cont--;
         free(aux);
     }
-}
+} */
 
-/* void imprimeProcessador(Processador *lista){
+void cpuInfo(Processador *lista){
     BlocoLista *b = lista->primeiro;
     if(lista->primeiro == lista->ultimo){
-        printf("Essa lista está vazia ou dado não existe\n");
+        printf("Esse processador está sem processos\n");
         return;
     }
     while(b->proximo){
         b = b->proximo;
-        printf("UserID: %d\tMovieID: %d\tRating: %d\n", b->item.userID, b->item.movieID, b->item.rating);
+        if(b->processo == NULL){
+            printf("Não existem processos sendo executados no processoador\n");
+        }else{
+            printf("Descrição: %s\n", b->processo->descricao);
+            printf("Identificação: %d\n", b->processo->id);
+            printf("TimeStamp: %d\n", b->processo->timestamp);
+            printf("Quantum: %d\n", b->processo->quantum);
+        }
     }
-    printf("O tamanho da lista: %d\n", lista->cont);
-} */
+}

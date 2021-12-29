@@ -1,6 +1,6 @@
 CXX      := -gcc
-CXXFLAGS := -Wall -Wextra -Werror
-LDFLAGS  := -lstdc++ -lm 
+CXXFLAGS := -Wall -Wextra
+LDFLAGS  := -ljson-c -lstdc++ -lm
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 APP_DIR  := $(BUILD)/

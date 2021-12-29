@@ -24,9 +24,10 @@ struct Memoria{
 };
 
 void iniciaMemoria(Memoria *h, int M);
-void imprimeHash(Memoria *h);
-int getValueHash(Memoria *h, int key);
+void imprimeMemoria(Memoria *h);
+int getValueMemoria(Memoria *h, int key);
 int LRUPolicy(Memoria *h);
 void insereNaMemoria(Memoria *h, int key, Processo *processo);
+void memInfo(Memoria *h);
 
 #endif
