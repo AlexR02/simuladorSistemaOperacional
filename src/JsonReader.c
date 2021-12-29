@@ -1,16 +1,20 @@
-#include <json-c/json.h>
 #include "JsonReader.h"
 
 void readJson(const char* fileName, Memoria *m, Processador *p, Disco *d) {
 	FILE *fp;
-	char buffer[1024];
+	char *aux = (char*)malloc(sizeof(char)), *buffer = (char*)malloc(100*sizeof(char));
 	struct json_object *parsed_json;
 	struct json_object *memoria;
 	struct json_object *cpu;
 	struct json_object *disco;
 
 	fp = fopen(fileName,"r");
-	fread(buffer, 1024, 1, fp);
+    if(fp == NULL) {
+        printf("Não foi possível abrir o arquivo!!\n");
+    }
+    while(fscanf(fp, "%c", aux) != EOF) {
+        strcat(buffer, aux);
+    }
 	fclose(fp);
 
 	parsed_json = json_tokener_parse(buffer);
@@ -23,8 +27,8 @@ void readJson(const char* fileName, Memoria *m, Processador *p, Disco *d) {
     for(int i = 0; i < json_object_get_int(cpu); i++){
         insereNoProcessador(p, NULL);
     }
-    for(int i = 0; i < json_object_get_int(cpu); i++){
-        empilharNoDisco(d, json_object_get_int(disco));
+    for(int i = 0; i < json_object_get_int(disco); i++){
+        empilharNoDisco(d, NULL);
     }
 }
 

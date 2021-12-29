@@ -57,15 +57,15 @@ void imprimeHash(Memoria *h){
 }
 
 void memInfo(Memoria *h){
-	printf ("Memoria Total:%d/\n", h->M);
+	printf ("Memoria Total:%d\n", h->M);
 	int aux = 0;
 	if(h->table != NULL){
 		if(h->table[0].processo != NULL){
 			for(int i=0; i<h->M; i++){
 				aux++;
 			}
-			printf("Memoria Alocada: %d", aux);
 		}
 	}
+	printf("Memoria Alocada: %d\n", aux);
 	printf("Memoria Livre:%d\n",h->M - aux);
 }

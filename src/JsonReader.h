@@ -2,6 +2,7 @@
 #define JSONREADER_H
 
 #include <json-c/json.h>
+#include <string.h>
 #include "Memoria.h"
 #include "Processador.h"
 #include "Disco.h"
