@@ -17,6 +17,7 @@ struct TipoBloco_pilha{
 struct Disco{
     Bloco_pilha *top;
     int tam;
+    int count;
 };
 
 void iniciaDisco(Disco *disco);

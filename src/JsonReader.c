@@ -29,6 +29,7 @@ void readJsonEstruturas(const char* fileName, char* politica, Memoria *m, Proces
     json_object_object_get_ex(parsed_json, "politica", &politicaJson);
 
     iniciaMemoria(m, json_object_get_int(memoria));
+    p->tam = json_object_get_int(cpu);
     for(int i = 0; i < json_object_get_int(cpu); i++){
         insereNoProcessador(p, NULL);
     }
@@ -82,6 +83,7 @@ void readJsonProcessos(const char* fileName, Processador *filaDeProcessos, char 
         p->timestamp = json_object_get_int(timestamp);
         p->prioridade = json_object_get_int(prioridade);
         filaDeProcessos->tam++;
+        p->status = (char*)malloc(sizeof(char));
         insereNoProcessador(filaDeProcessos, p); 
         aux = 1;    
     }
@@ -99,60 +101,83 @@ void readJsonProcessos(const char* fileName, Processador *filaDeProcessos, char 
 }
 
 void escalonadorFIFO(Processador *filaDeProcessos, Memoria *m, Processador *cpu, Disco *d){
-    printf("%d", d->tam);
-    memInfo(m);
-    listaDeProcessos(filaDeProcessos);
-    cpuInfo(cpu);
 
+    FILE *resultados;
+    resultados = fopen("resultados.txt", "w");
+    if(resultados == NULL) {
+        printf("Não foi possível criar o arquivo para escrever os resultados!!\n");
+    }
+    
     BlocoLista *b = filaDeProcessos->primeiro;
     if(filaDeProcessos->primeiro == filaDeProcessos->ultimo){
         printf("Não existem processos na fila\n");
         return;
     }
-    int aux = 0;
-    while((filaDeProcessos->tam - aux) != 0){
+
+    int aux = 0; //auxiliar para saber quantos processos já se encerraram
+    int ciclo = 1; //quantidades de cilos corridos
+    int auxCiclo = 0;
+
+    while((filaDeProcessos->cont - aux) != 0){
         b = b->proximo;
         Processo *p = b == NULL ? NULL : b->processo;
+        if(ciclo != auxCiclo){
+            fprintf(resultados,"%s %d \n","PROCESSOS QUE RODARAM NO CICLO ", ciclo);
+        }
+
         if(p != NULL){
-            p->status = (char*)malloc(sizeof(char));
+            auxCiclo = ciclo;
             insereNoProcessador(cpu, p);
             if(strcmp(p->init_type, "cpu-bound") == 0 && p->ciclos > 0){
                 strcpy(p->status,"executando");
                 sleep(p->max_quantum);
-                --p->ciclos;
+                p->ciclos--;
+                p->timestamp = p->timestamp + p->max_quantum;
                 if(p->ciclos == 0){
                     strcpy(p->status,"pronto");
                     aux++;
                 }
+                removeDoProcessador(cpu, cpu->primeiro);
+                fprintf(resultados,"\t%s %d%s %d%s %s\n","ID:", p->id, "; TIMESTAMP:", p->timestamp, "; TYPE:", p->init_type);
             }else if(p->ciclos > 0){
                 srand((unsigned)time(NULL));
-                removeDoProcessador(cpu, cpu->primeiro->proximo);
+                removeDoProcessador(cpu, cpu->primeiro);
                 if(strcmp(p->init_type, "io-bound") == 0){
                     strcpy(p->status,"bloqueado");
                     sleep(1 + (rand() % 4));//punição do processo
+                    p->timestamp = p->timestamp + 1 + (rand() % 4);
                     empilharNoDisco(d, p);
                     strcpy(p->status,"executando");
                     sleep(p->max_quantum);
-                    --p->ciclos;
+                    p->ciclos--;
+                    p->timestamp = p->timestamp + p->max_quantum;
                     if(p->ciclos == 0){
                         strcpy(p->status,"pronto");
                         aux++;
                     }
+                    fprintf(resultados,"\t%s %d%s %d%s %s\n","ID:", p->id, "; TIMESTAMP:", p->timestamp, "; TYPE:", p->init_type);
                 }else if(strcmp(p->init_type, "memory-bound") == 0){
-                    p->status = "bloqueado";
+                    strcpy(p->status,"bloqueado");
                     sleep(1 + (rand() % 4));//punição do processo
+                    p->timestamp = p->timestamp + 1 + (rand() % 4);
                     insereNaMemoria(m, p);
                     strcpy(p->status,"executando");
                     sleep(p->max_quantum);
-                    --p->ciclos;
+                    p->ciclos--;
+                    p->timestamp = p->timestamp + p->max_quantum;
                     if(p->ciclos == 0){
                         strcpy(p->status,"pronto");
                         aux++;
                     }
+                    fprintf(resultados,"\t%s %d%s %d%s %s\n","ID:", p->id, "; TIMESTAMP:", p->timestamp, "; TYPE:", p->init_type);
                 }
             }
         }else{
             b = filaDeProcessos->primeiro;
+            ciclo++;
+            fprintf(resultados,"\n\n");
         }
     }
+    printf("Terminou o load dos processos\n");
+    fclose(resultados);
 }

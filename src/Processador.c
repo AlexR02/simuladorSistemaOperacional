@@ -7,11 +7,14 @@ void iniciaProcessador(Processador *lista){
     lista->cont = 0;
 }
 void insereNoProcessador(Processador *lista, Processo *processo){
-    lista->ultimo->proximo = (BlocoLista*)malloc(sizeof(BlocoLista));
-    lista->ultimo = lista->ultimo->proximo;
-    lista->ultimo->processo = processo;
-    lista->ultimo->proximo = NULL;
-    lista->cont++;
+    if(lista->tam > 0 && lista->tam > lista->cont){
+        lista->ultimo->proximo = (BlocoLista*)malloc(sizeof(BlocoLista));
+        lista->ultimo = lista->ultimo->proximo;
+        lista->ultimo->processo = processo;
+        lista->ultimo->proximo = NULL;
+        if(processo != NULL)
+            lista->cont++;
+    }
 }
 
 void removeDoProcessador(Processador *lista, BlocoLista *b){
@@ -28,7 +31,6 @@ void removeDoProcessador(Processador *lista, BlocoLista *b){
     if(b->proximo == NULL){
         lista->ultimo = b;
         lista->cont--;
-        free(aux);
     }
 }
 
@@ -70,7 +72,7 @@ void listaDeProcessos(Processador *lista){
             if(aux > 0){
                 imprimeProcesso(*b->processo);
             }else{
-                printf("id\tciclos\tmax_quantum\tinit_type\ttimestamp\tpropriedade\tstatus\n");
+                printf("id\tciclos\tmax_quantum\tinit_type\ttimestamp\tprioridade\tstatus\n");
                 imprimeProcesso(*b->processo);
             }
             ++aux;

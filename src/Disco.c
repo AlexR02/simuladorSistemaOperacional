@@ -7,12 +7,15 @@ void iniciaDisco(Disco *disco){
 }
 
 void empilharNoDisco(Disco *disco, Processo *processo){
-    Bloco_pilha *aux;
-    aux = (Bloco_pilha*)malloc(sizeof(Bloco_pilha));
-    disco->top->processo = processo;
-    aux->proximo = disco->top;
-    disco->top = aux;
-    disco->tam++;
+    if(disco->tam > 0 && disco->tam > disco->count){
+        Bloco_pilha *aux;
+        aux = (Bloco_pilha*)malloc(sizeof(Bloco_pilha));
+        disco->top->processo = processo;
+        aux->proximo = disco->top;
+        disco->top = aux;
+        if(processo != NULL)
+            disco->count++;
+    }
 }
 
 /* void desempilhar(Disco *disco, Processo *processo){

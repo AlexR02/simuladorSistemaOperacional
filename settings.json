@@ -1,5 +1,5 @@
 {
-    "memoria": 5,
+    "memoria": 1,
     "cpu": 1,
     "disco": 1,
     "politica": "FIFO"
