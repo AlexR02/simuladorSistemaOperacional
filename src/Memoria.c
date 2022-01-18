@@ -26,8 +26,8 @@ int LRUPolicy(Memoria *h){
 }
 
 
-void insereNaMemoria(Memoria *h, int key, Processo *processo){
-	int idx = hash(key, h->M);
+void insereNaMemoria(Memoria *h, Processo *processo){
+	int idx = hash(processo->id, h->M);
     //printf("IDX(fora do while):%d\n", idx);
 	int aux = idx;
 	
@@ -42,7 +42,7 @@ void insereNaMemoria(Memoria *h, int key, Processo *processo){
 	
 	//printf("IDX:%d\n", idx);
 
-	h->table[idx].key   = key;
+	h->table[idx].key = processo->id;
 	h->table[idx].processo = processo;
 	h->table[idx].count = 1;
 }

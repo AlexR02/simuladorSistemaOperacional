@@ -17,11 +17,13 @@ struct TipoLista{
     BlocoLista *primeiro;
     BlocoLista *ultimo;
     int cont;
+    int tam;
 };
 
 void iniciaProcessador(Processador *lista);
 void insereNoProcessador(Processador *lista, Processo *processo);
-void removeDoProcessador(Processador *lista, BlocoLista *b, Processo *processo);
+void removeDoProcessador(Processador *lista, BlocoLista *b);
 void cpuInfo(Processador *lista);
+void listaDeProcessos(Processador *lista);
 
 #endif

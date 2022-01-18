@@ -14,7 +14,7 @@ void insereNoProcessador(Processador *lista, Processo *processo){
     lista->cont++;
 }
 
-/* void removeDoProcessador(Processador *lista, BlocoLista *b, Processo *processo){
+void removeDoProcessador(Processador *lista, BlocoLista *b){
     BlocoLista *aux;
 
     if(lista->primeiro == lista->ultimo || b >= lista->ultimo){
@@ -23,7 +23,6 @@ void insereNoProcessador(Processador *lista, Processo *processo){
     }
     
     aux = b->proximo;
-    processo = aux->processo;
     b->proximo = aux->proximo;
 
     if(b->proximo == NULL){
@@ -31,7 +30,7 @@ void insereNoProcessador(Processador *lista, Processo *processo){
         lista->cont--;
         free(aux);
     }
-} */
+}
 
 void cpuInfo(Processador *lista){
     BlocoLista *b = lista->primeiro;
@@ -39,15 +38,42 @@ void cpuInfo(Processador *lista){
         printf("Esse processador está sem processos\n");
         return;
     }
+    int aux = 0;
     while(b->proximo){
         b = b->proximo;
         if(b->processo == NULL){
             printf("Não existem processos sendo executados no processoador\n");
         }else{
-            printf("Descrição: %s\n", b->processo->descricao);
-            printf("Identificação: %d\n", b->processo->id);
-            printf("TimeStamp: %d\n", b->processo->timestamp);
-            printf("Quantum: %d\n", b->processo->quantum);
+            if(aux > 0){
+                imprimeProcesso(*b->processo);
+            }else{
+                printf("id\tciclos\tmax_quantum\tinit_type\ttimestamp\tpropriedade\n");
+                imprimeProcesso(*b->processo);
+            }
+            ++aux;
+        }
+    }
+}
+
+void listaDeProcessos(Processador *lista){
+    BlocoLista *b = lista->primeiro;
+    if(lista->primeiro == lista->ultimo){
+        printf("Não existem processos na fila\n");
+        return;
+    }
+    int aux = 0;
+    while(b->proximo){
+        b = b->proximo;
+        if(b->processo == NULL){
+            printf("Não existem processos na fila\n");
+        }else{
+            if(aux > 0){
+                imprimeProcesso(*b->processo);
+            }else{
+                printf("id\tciclos\tmax_quantum\tinit_type\ttimestamp\tpropriedade\tstatus\n");
+                imprimeProcesso(*b->processo);
+            }
+            ++aux;
         }
     }
 }

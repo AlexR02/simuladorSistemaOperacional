@@ -27,7 +27,7 @@ void iniciaMemoria(Memoria *h, int M);
 void imprimeMemoria(Memoria *h);
 int getValueMemoria(Memoria *h, int key);
 int LRUPolicy(Memoria *h);
-void insereNaMemoria(Memoria *h, int key, Processo *processo);
+void insereNaMemoria(Memoria *h, Processo *processo);
 void memInfo(Memoria *h);
 
 #endif
