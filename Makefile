@@ -14,11 +14,11 @@ all: build $(APP_DIR)/$(TARGET)
 
 $(OBJ_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $(INCLUDE) -o $@ -c $<
+	$(CXX) -g $(CXXFLAGS) $(INCLUDE) -o $@ -c $< 
 
 $(APP_DIR)/$(TARGET): $(OBJECTS)
 	@mkdir -p $(@D)
-	$(CXX) $(OBJECTS) $(CXXFLAGS) $(INCLUDE) $(LDFLAGS) -o $(APP_DIR)/$(TARGET)
+	$(CXX) -g $(OBJECTS) $(CXXFLAGS) $(INCLUDE) $(LDFLAGS) -o $(APP_DIR)/$(TARGET)
 
 .PHONY: all build clean debug release run
 

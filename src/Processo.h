@@ -8,12 +8,14 @@ typedef struct Processo Processo;
 
 struct Processo{
 	int id;
-    int ciclos;
-	int max_quantum; 
+    double ciclos;
+    double ciclosTotais;
+	double max_quantum; 
     char *init_type;
     int timestamp;
     int prioridade;
     char *status;
+    int bilhetes;
 };
 
 //void processo(int id, int ciclos, int max_quantum, char *init_type, int timestamp, int prioridade);

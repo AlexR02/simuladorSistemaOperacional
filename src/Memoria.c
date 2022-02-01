@@ -57,6 +57,7 @@ void imprimeHash(Memoria *h){
 }
 
 void memInfo(Memoria *h){
+	printf("Utilize o comando 'stop' para parar o monitoramento!!\n");
 	printf ("Memoria Total:%d\n", h->M);
 	int aux = 0;
 	if(h->table != NULL){

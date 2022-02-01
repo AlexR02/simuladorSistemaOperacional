@@ -72,7 +72,7 @@ void listaDeProcessos(Processador *lista){
             if(aux > 0){
                 imprimeProcesso(*b->processo);
             }else{
-                printf("id\tciclos\tmax_quantum\tinit_type\ttimestamp\tprioridade\tstatus\n");
+                printf("id\tciclos\tmax_quantum\tinit_type\ttimestamp\tprioridade\tstatus\t\tbilhetes\n");
                 imprimeProcesso(*b->processo);
             }
             ++aux;
