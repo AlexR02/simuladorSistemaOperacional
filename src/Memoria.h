@@ -28,6 +28,7 @@ void imprimeMemoria(Memoria *h);
 int getValueMemoria(Memoria *h, int key);
 int LRUPolicy(Memoria *h);
 void insereNaMemoria(Memoria *h, Processo *processo);
+void removeDaMemoria(Memoria *h, int key);
 void memInfo(Memoria *h);
 void imprimeHash(Memoria *h);
 

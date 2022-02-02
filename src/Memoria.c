@@ -47,6 +47,20 @@ void insereNaMemoria(Memoria *h, Processo *processo){
 	h->table[idx].count = 1;
 }
 
+void removeDaMemoria(Memoria *h, int key){
+	if(h->table != NULL){
+		if(h->table[0].processo != NULL){
+			for(int i=0; i<h->M; i++){
+				if(h->table[i].key == key){
+					h->table[i].key = -1;
+					h->table[i].processo = NULL;
+					h->table[i].count = 0;
+				}
+			}
+		}
+	}
+}
+
 void imprimeHash(Memoria *h){
 	for(int i=0; i<h->M; i++){
 		printf("KEY:%d\t- Value:", h->table[i].key);
@@ -57,7 +71,7 @@ void imprimeHash(Memoria *h){
 }
 
 void memInfo(Memoria *h){
-	printf("Utilize o comando 'stop' para parar o monitoramento!!\n");
+	printf("Dê um 'enter' para parar o monitoramento!!\n");
 	printf ("Memoria Total:%d\n", h->M);
 	int aux = 0;
 	if(h->table != NULL){

@@ -2,5 +2,5 @@
     "memoria": 1,
     "cpu": 1,
     "disco": 1,
-    "politica": "LRU"
+    "politica": "FIFO"
 }

@@ -127,6 +127,11 @@ void readJsonProcessos(const char* fileName, Processador *filaDeProcessos) {
 
 void executeProcessos() {
 
+    if(filaDeProcessosG == NULL){
+        printf("Não existem processos na fila\n");
+        return;
+    }
+
     if(filaDeProcessosG->primeiro == filaDeProcessosG->ultimo){
         printf("Não existem processos na fila\n");
         return;
@@ -226,6 +231,7 @@ void manipulaProcesso(){
             pAuxG->timestamp = pAuxG->timestamp + quantum;
             /* system("clear"); //remover
             listaDeProcessos(filaDeProcessos); //remover */
+            removeDaMemoria(mG, pAuxG->id);
             if(pAuxG->ciclos <= 0.09){
                 pAuxG->ciclos = 0;
                 strcpy(pAuxG->status,"finalizado");

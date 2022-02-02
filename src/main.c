@@ -14,7 +14,7 @@ void help(){
     printf("    help:\t\tLista os comandos disponíveis no shell\n");
     printf("    meminfo:\t\tExibe as informações da memória RAM\n");
     printf("    queueschell:\tDetalha quais processos estão sendo gerenciados.\n");
-    printf("    cpuinfo:\t\tDetalha qual processo está em execução\n");
+    printf("    cpuinfo:\t\tDetalha qual processo está em execução no processador\n");
     printf("    execute:\t\tExecuta a fila de processos\n");
     printf("    kill -9:\t\tFinaliza a execução do sistema operacional\n");
     printf("    load:\t\tCarrega a lista de processos\n");
@@ -23,19 +23,32 @@ void help(){
     printf("\n\n");
 }
 
-void* memInfoMain(){
-    while(loop == 0){
-        memInfo(memoria);     
-        sleep(1);
-        system("clear");
-    }
-    return NULL;
-}
-
 void* queueschell(){
     loop = 0;
     while(loop == 0){
         listaDeProcessos(filaDeProcessos);
+        sleep(1);
+        system("clear");
+    }
+    loop = 0;
+    return NULL;
+}
+
+void* cpuInfoMain(){
+    loop = 0;
+    while(loop == 0){
+        cpuInfo(cpu);
+        sleep(1);
+        system("clear");
+    }
+    loop = 0;
+    return NULL;
+}
+
+void* memInfoMain(){
+    loop = 0;
+    while(loop == 0){
+        memInfo(memoria);
         sleep(1);
         system("clear");
     }
@@ -66,8 +79,15 @@ int main(){
         if(strcmp(opcoes, "help\n") == 0){
             help();
         }else if(strcmp(opcoes, "meminfo\n") == 0){
-            memInfo(memoria);
-            printf("\n\n");
+            system("clear");
+            pthread_t newThread;
+            pthread_create(&newThread, NULL, memInfoMain, NULL);
+            char stop;
+            scanf("%c", &stop);
+            loop = 1;
+            pthread_join(newThread, NULL);
+            system("clear");
+            help();
         }else if(strcmp(opcoes, "queueschell\n") == 0 ){
             system("clear");
             pthread_t newThread;
@@ -79,8 +99,15 @@ int main(){
             system("clear");
             help();
         }else if(strcmp(opcoes, "cpuinfo\n") == 0 ){
-            cpuInfo(cpu);
-            printf("\n\n");
+            system("clear");
+            pthread_t newThread;
+            pthread_create(&newThread, NULL, cpuInfoMain, NULL);
+            char stop;
+            scanf("%c", &stop);
+            loop = 1;
+            pthread_join(newThread, NULL);
+            system("clear");
+            help();
         }else if(strcmp(opcoes, "execute\n") == 0 ){
             executeProcessos();
             printf("\n\n");

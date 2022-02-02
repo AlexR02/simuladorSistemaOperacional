@@ -31,25 +31,29 @@ void removeDoProcessador(Processador *lista, BlocoLista *b){
     if(b->proximo == NULL){
         lista->ultimo = b;
         lista->cont--;
+        free(aux);
     }
 }
 
 void cpuInfo(Processador *lista){
+    printf("Dê um 'enter' para parar o monitoramento!!\n");
     BlocoLista *b = lista->primeiro;
     if(lista->primeiro == lista->ultimo){
-        printf("Esse processador está sem processos\n");
+        printf("id\tciclos\tmax_quantum\tinit_type\ttimestamp\tprioridade\tstatus\t\tbilhetes\n");
+        printf("%d\t%.2f\t%0.f\t\t%s\t\t%d\t\t%d\t\t%s\t\t%d\n",0, 0.00, 0.00, "*****", 0, 0, "*****", 0);
         return;
     }
     int aux = 0;
     while(b->proximo){
         b = b->proximo;
         if(b->processo == NULL){
-            printf("Não existem processos sendo executados no processoador\n");
+            printf("id\tciclos\tmax_quantum\tinit_type\ttimestamp\tpropriedade\n");
+            printf("%d\t%.2f\t%0.f\t\t%s\t\t%d\t\t%d\t\t%s\t\t%d\n",0, 0.00, 0.00, "*****", 0, 0, "*****", 0);
         }else{
             if(aux > 0){
                 imprimeProcesso(*b->processo);
             }else{
-                printf("id\tciclos\tmax_quantum\tinit_type\ttimestamp\tpropriedade\n");
+                printf("id\tciclos\tmax_quantum\tinit_type\ttimestamp\tprioridade\tstatus\t\tbilhetes\n");
                 imprimeProcesso(*b->processo);
             }
             ++aux;
@@ -58,6 +62,7 @@ void cpuInfo(Processador *lista){
 }
 
 void listaDeProcessos(Processador *lista){
+    printf("Dê um 'enter' para parar o monitoramento!!\n");
     BlocoLista *b = lista->primeiro;
     if(lista->primeiro == lista->ultimo){
         printf("Não existem processos na fila\n");

@@ -25,5 +25,6 @@ void insereNoProcessador(Processador *lista, Processo *processo);
 void removeDoProcessador(Processador *lista, BlocoLista *b);
 void cpuInfo(Processador *lista);
 void listaDeProcessos(Processador *lista);
+void limpaProcessador(Processador *p);
 
 #endif
