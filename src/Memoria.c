@@ -7,9 +7,15 @@ void iniciaMemoria(Memoria *h, int M){
 		h->table[i].key   = -1;
 		h->table[i].processo = NULL;
 		h->table[i].count = 0;
+		h->table[i].segments = 0;
 	}
 
 	h->M = M;
+	h->blocosSegmentos = (int*)malloc(M*sizeof(int));
+	for(int i=0;i<M;i++){
+		h->blocosSegmentos[i] = 0;
+	}
+	h->count = 0;
 }
 
 int LRUPolicy(Memoria *h){
@@ -26,7 +32,7 @@ int LRUPolicy(Memoria *h){
 }
 
 
-void insereNaMemoria(Memoria *h, Processo *processo){
+void insereNaMemoria(Memoria *h, Processo *processo, int segments){
 	int idx = hash(processo->id, h->M);
     //printf("IDX(fora do while):%d\n", idx);
 	int aux = idx;
@@ -45,19 +51,28 @@ void insereNaMemoria(Memoria *h, Processo *processo){
 	h->table[idx].key = processo->id;
 	h->table[idx].processo = processo;
 	h->table[idx].count = 1;
+	h->table[idx].segments = segments;
 }
 
 void removeDaMemoria(Memoria *h, int key){
-	if(h->table != NULL){
-		if(h->table[0].processo != NULL){
-			for(int i=0; i<h->M; i++){
-				if(h->table[i].key == key){
-					h->table[i].key = -1;
-					h->table[i].processo = NULL;
-					h->table[i].count = 0;
+	int idx = hash(key, h->M);
+
+	if(h->table[idx].key == key){
+		h->table[idx].key = -1;
+		h->table[idx].processo = NULL;
+		h->table[idx].count = 0;
+		int aux = 0;
+		for(int i = 0; i < h->M; i++){
+			if(h->blocosSegmentos[i] == key){
+				h->blocosSegmentos[i] = 0;
+				h->count--;
+				aux++;
+				if(aux == h->table[idx].segments){
+					break;
 				}
 			}
 		}
+		h->table[idx].segments = 0;
 	}
 }
 
@@ -72,15 +87,12 @@ void imprimeHash(Memoria *h){
 
 void memInfo(Memoria *h){
 	printf("Dê um 'enter' para parar o monitoramento!!\n");
-	printf ("Memoria Total:%d\n", h->M);
-	int aux = 0;
-	if(h->table != NULL){
-		if(h->table[0].processo != NULL){
-			for(int i=0; i<h->M; i++){
-				aux++;
-			}
-		}
+	printf("Segmento Total da Memória: %d\n", h->M);
+	printf("Alocação dos segmentos da memória: ");
+	for(int i=0;i<h->M;i++){
+		printf("%d ", h->blocosSegmentos[i]);
 	}
-	printf("Memoria Alocada: %d\n", aux);
-	printf("Memoria Livre:%d\n",h->M - aux);
+	printf("\n");
+	printf("Segmentos Alocados da Memória: %d\n", h->count);
+	printf("Segmentos Livres da Memória: %d\n",h->M - h->count);
 }

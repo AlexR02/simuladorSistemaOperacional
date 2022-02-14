@@ -62,7 +62,6 @@ void cpuInfo(Processador *lista){
 }
 
 void listaDeProcessos(Processador *lista){
-    printf("Dê um 'enter' para parar o monitoramento!!\n");
     BlocoLista *b = lista->primeiro;
     if(lista->primeiro == lista->ultimo){
         printf("Não existem processos na fila\n");

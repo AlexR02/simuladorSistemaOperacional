@@ -100,6 +100,7 @@ void readJsonProcessos(const char* fileName, Processador *filaDeProcessos) {
 
         p->id = json_object_get_int(processo);
         p->ciclos = json_object_get_double(ciclos);
+        p->cliclosAux = 0;
         p->ciclosTotais = json_object_get_double(ciclos);
         p->max_quantum = json_object_get_int(max_quantum);
         p->init_type = (char*)malloc(sizeof (char));
@@ -108,6 +109,7 @@ void readJsonProcessos(const char* fileName, Processador *filaDeProcessos) {
         p->prioridade = json_object_get_int(prioridade);
         filaDeProcessos->tam++;
         p->status = (char*)malloc(sizeof(char));
+        p->qtdBloq = 0;
         p->bilhetes = 0;
         strcpy(p->status,"pronto");
         insereNoProcessador(filaDeProcessos, p); 
@@ -158,12 +160,12 @@ void executeProcessos() {
 void manipulaProcesso(){
     auxQtdCiclo = qtdCiclos; 
     insereNoProcessador(pG, pAuxG);
-    if(qtdCiclos > 1){
+    if(qtdCiclos > 1 && pAuxG->ciclos > 0 && pAuxG->cliclosAux == 0 && mG->table[hash(pAuxG->id, mG->M)].key == -1 && strcmp(pAuxG->status,"inapto") != 0){
         strcpy(pAuxG->init_type,types[rand() % 3]); //Após o primeiro ciclo, utiliza o randômico para definir o typo do processo: cpu, memory ou io bound.
     }
     /* system("clear"); //remover
     listaDeProcessos(filaDeProcessos); //remover */
-    if(strcmp(pAuxG->init_type, "cpu-bound") == 0 && pAuxG->ciclos > 0){
+    if(strcmp(pAuxG->init_type, "cpu-bound") == 0 && pAuxG->ciclos > 0 && strcmp(pAuxG->status,"inapto") != 0){
         strcpy(pAuxG->status,"executando");
         /* system("clear"); //remover
         listaDeProcessos(filaDeProcessos); //remover */
@@ -186,7 +188,7 @@ void manipulaProcesso(){
         removeDoProcessador(pG, pG->primeiro);
         if(resultados != NULL)
             fprintf(resultados,"\t%s %d%s %0.f%s %d%s %.2f%s %s\n","ID:", pAuxG->id, "; QUANTUM:", quantum, "; TIMESTAMP:", pAuxG->timestamp, "; CICLO(S)_REALIZADO(S):", cicloRealizado, "; TYPE:", pAuxG->init_type);
-    }else if(pAuxG->ciclos > 0){
+    }else if(pAuxG->ciclos > 0 && strcmp(pAuxG->status,"inapto") != 0){
         removeDoProcessador(pG, pG->primeiro);
         if(strcmp(pAuxG->init_type, "io-bound") == 0){
             strcpy(pAuxG->status,"bloqueado");
@@ -216,33 +218,83 @@ void manipulaProcesso(){
             if(resultados != NULL)
                 fprintf(resultados,"\t%s %d%s %0.f%s %d%s %.2f%s %s\n","ID:", pAuxG->id, "; QUANTUM:", quantum, "; TIMESTAMP:", pAuxG->timestamp, "; CICLO(S)_REALIZADO(S):", cicloRealizado, "; TYPE:", pAuxG->init_type);
         }else if(strcmp(pAuxG->init_type, "memory-bound") == 0){
-            strcpy(pAuxG->status,"bloqueado");
-            /* system("clear"); //remover
-            listaDeProcessos(filaDeProcessos); //remover */
-            int sleepAux = 1 + (rand() % 4); 
-            sleep(sleepAux);//punição do processo
-            pAuxG->timestamp = pAuxG->timestamp + sleepAux;
-            insereNaMemoria(mG, pAuxG);
-            strcpy(pAuxG->status,"executando");
-            double quantum = 1 + rand() % ((int)pAuxG->max_quantum);
-            sleep(quantum);
-            double cicloRealizado = (quantum/pAuxG->max_quantum) > pAuxG->ciclos ? pAuxG->ciclos : (quantum/pAuxG->max_quantum);
-            pAuxG->ciclos = pAuxG->ciclos - cicloRealizado;
-            pAuxG->timestamp = pAuxG->timestamp + quantum;
-            /* system("clear"); //remover
-            listaDeProcessos(filaDeProcessos); //remover */
-            removeDaMemoria(mG, pAuxG->id);
-            if(pAuxG->ciclos <= 0.09){
-                pAuxG->ciclos = 0;
-                strcpy(pAuxG->status,"finalizado");
-                auxDoneProcess++;
+            int seg = 0;
+            if(mG->table[hash(pAuxG->id, mG->M)].key == -1){
+                seg = 8 + (rand() % 13);
+            }
+
+            int segAux = 0;
+            if(mG->table[hash(pAuxG->id, mG->M)].key == -1){
+                for(int i=0; i<mG->M; i++){
+                    if(mG->blocosSegmentos[i] == 0){
+                        segAux++;
+                        mG->blocosSegmentos[i] = pAuxG->id;
+                        if(segAux == seg){
+                            mG->count += seg;
+                            break;
+                        }
+                    } else if(mG->blocosSegmentos[i] != 0){
+                        segAux = 0;
+                    }
+                }
+                if(segAux < seg){
+                    for(int i=0; i<mG->M; i++){
+                        if(mG->blocosSegmentos[i] == pAuxG->id)
+                            mG->blocosSegmentos[i] = 0;
+                    }
+                }
+            }
+
+            if(mG->table[hash(pAuxG->id, mG->M)].key == pAuxG->id || segAux == seg){
+                strcpy(pAuxG->status,"bloqueado");
                 /* system("clear"); //remover
                 listaDeProcessos(filaDeProcessos); //remover */
+                int sleepAux = 1 + (rand() % 4); 
+                sleep(sleepAux);//punição do processo
+                pAuxG->timestamp = pAuxG->timestamp + sleepAux;
+                if(mG->table[hash(pAuxG->id, mG->M)].key == -1){
+                    insereNaMemoria(mG, pAuxG, seg);
+                }
+                strcpy(pAuxG->status,"executando");
+                double quantum = 1 + rand() % ((int)pAuxG->max_quantum);
+                sleep(quantum);
+                double cicloRealizado = (quantum/pAuxG->max_quantum) > pAuxG->ciclos ? pAuxG->ciclos : (quantum/pAuxG->max_quantum);
+                if(cicloRealizado >= (0.9)){
+                    removeDaMemoria(mG, pAuxG->id);
+                    pAuxG->cliclosAux = 0;
+                    /* strcpy(pAuxG->init_type,types[rand() % 3]); */
+                }else{
+                    pAuxG->cliclosAux += cicloRealizado;
+                    if(pAuxG->cliclosAux >= (0.9)){
+                        removeDaMemoria(mG, pAuxG->id);
+                        pAuxG->cliclosAux = 0;
+                        /* strcpy(pAuxG->init_type,types[rand() % 3]); */
+                    }
+                }
+                pAuxG->ciclos = pAuxG->ciclos - cicloRealizado;
+                pAuxG->timestamp = pAuxG->timestamp + quantum;
+                /* system("clear"); //remover
+                listaDeProcessos(filaDeProcessos); //remover */
+                if(pAuxG->ciclos <= 0.09){
+                    pAuxG->ciclos = 0;
+                    strcpy(pAuxG->status,"finalizado");
+                    auxDoneProcess++;
+                    removeDaMemoria(mG, pAuxG->id);
+                    /* system("clear"); //remover
+                    listaDeProcessos(filaDeProcessos); //remover */
+                }else{
+                    strcpy(pAuxG->status,"pronto");
+                }
+                if(resultados != NULL)
+                    fprintf(resultados,"\t%s %d%s %0.f%s %d%s %.2f%s %s\n","ID:", pAuxG->id, "; QUANTUM:", quantum, "; TIMESTAMP:", pAuxG->timestamp, "; CICLO(S)_REALIZADO(S):", cicloRealizado, "; TYPE:", pAuxG->init_type);
             }else{
-                strcpy(pAuxG->status,"pronto");
+                strcpy(pAuxG->status,"travado");
+                pAuxG->qtdBloq++;
+                if(pAuxG->qtdBloq == 4){
+                    strcpy(pAuxG->status,"inapto");
+                    auxDoneProcess++;
+                }
             }
-            if(resultados != NULL)
-                fprintf(resultados,"\t%s %d%s %0.f%s %d%s %.2f%s %s\n","ID:", pAuxG->id, "; QUANTUM:", quantum, "; TIMESTAMP:", pAuxG->timestamp, "; CICLO(S)_REALIZADO(S):", cicloRealizado, "; TYPE:", pAuxG->init_type);
         }
     }
 }

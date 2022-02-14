@@ -49,6 +49,8 @@ void* memInfoMain(){
     loop = 0;
     while(loop == 0){
         memInfo(memoria);
+        printf("\n");
+        listaDeProcessos(filaDeProcessos);
         sleep(1);
         system("clear");
     }

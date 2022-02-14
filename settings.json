@@ -1,6 +1,6 @@
 {
-    "memoria": 1,
+    "memoria": 100,
     "cpu": 1,
     "disco": 1,
-    "politica": "FIFO"
+    "politica": "LRU"
 }
